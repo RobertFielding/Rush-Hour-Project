@@ -1,2 +1,2 @@
-![Alt Text](GIFS\rush-hour.gif)
+![Rush-hour-solver](https://github.com/RobertFielding/Rush-Hour-Project/blob/master/rush_hour.gif)
 
