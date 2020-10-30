@@ -1,8 +1,9 @@
 import time
 from tkinter import *
-
-from rush_hour_solver_after import bfs
+from tkinter import messagebox
+from rush_hour_solver import bfs
 from validate_grid_dict_to_int import validate_dict
+import pyautogui
 
 # A simple colouring grid app, with load/save functionality.
 # Christian Hill, August 2018.
@@ -16,7 +17,7 @@ class GridApp:
     """The main class representing a grid of coloured cells."""
 
     # The colour palette
-    colours = (unfilled, 'red', 'green', 'lightgreen', 'darkgreen', 'lightblue', 'darkblue', 'blue', 'cyan', 'orange', 'yellow',
+    colours = (unfilled, 'red', 'green', 'lightgreen', 'olive', 'lightblue', 'darkblue', 'blue', 'cyan', 'orange', 'yellow',
                'magenta', 'purple', 'pink', 'brown', 'black', '#f5f5dc')
     ncolours = len(colours)
 
@@ -168,31 +169,29 @@ class GridApp:
         :return:
         '''
         unoccupied_coords = [(x, y) for x in range(1, 7) for y in range(1, 7)]
-        # grid has y-axis reversed -> convert coordinates
         for colour, coords_list in num_dict.items():
             for coord in coords_list:
                 cell_num = (coord[0] - 1) + 6 * (coord[1] - 1)
                 self.w.itemconfig(self.cells[cell_num], fill=colour)
-                self.w.update()
                 unoccupied_coords.remove(coord)
 
         for coord in unoccupied_coords:
             cell_num = (coord[0] - 1) + 6 * (coord[1] - 1)
             self.w.itemconfig(self.cells[cell_num], fill=unfilled)
-            self.w.update()
+        # update after all cells have been assigned colour
+        self.w.update()
 
     def solve(self, test_dict):
-        dict_valid, dict_or_error = validate_dict(test_dict)
+        dict_valid = validate_dict(test_dict)
         if dict_valid:
-            valid_dict = dict_or_error
+            valid_dict = dict_valid
             list_of_moves = bfs(valid_dict)
-            for grid_formation in list_of_moves:
-                self.dict_to_grid(grid_formation)
-                time.sleep(1)
-        else:
-            raise dict_or_error
-
-
+            if list_of_moves:
+                for index, grid_formation in enumerate(list_of_moves):
+                    self.dict_to_grid(grid_formation)
+                    time.sleep(1)
+            else:
+                messagebox.showerror("Error", "The board is not solvable")
 
 
 # Get the grid size from the command line, if provided

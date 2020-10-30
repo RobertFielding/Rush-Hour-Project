@@ -1,9 +1,7 @@
-import json
 from collections import namedtuple
 Vehicle = namedtuple('Vehicle', 'coordinate orientation vehicle_length')
+from tkinter import messagebox
 
-with open('grid_dict.json') as f:
-    test_dict = json.load(f)
 
 def convert_dict_to_int(dict):
     result_dict = {}
@@ -20,18 +18,19 @@ def validate_dict(alphabet_dict):
     num_dict = convert_dict_to_int(alphabet_dict)
     cond_dict = dict()
     for key, value_list in num_dict.items():
-        valid_list, vehicle_or_error = validate_list(value_list)
-        if valid_list:
-            cond_dict[key] = vehicle_or_error
+        vehicle_valid = validate_list(value_list, key)
+        if vehicle_valid:
+            cond_dict[key] = vehicle_valid
             continue
         else:
-            return False, TypeError(f"There is an error with colour {key}. {vehicle_or_error}")
-    return True, cond_dict
+            return False
+    return cond_dict
 
-def validate_list(list_of_coords):
+def validate_list(list_of_coords, colour_trialed):
     list_len = len(list_of_coords)
     if list_len < 2:
-        return False, ValueError("Length of vehicles cannot be less than 2 squares.")
+        messagebox.showerror("Error", f"Length of {colour_trialed} vehicle cannot be less than 2 squares.")
+        return False
 
     # test if the vehicles are on a line
     test_index = 1
@@ -45,7 +44,6 @@ def validate_list(list_of_coords):
         if y_valid:
             if y_coord != list_of_coords[test_index][1]:
                 y_valid = False
-
         test_index += 1
 
     # if vehicles along a line, are they connected
@@ -54,23 +52,21 @@ def validate_list(list_of_coords):
             x_list = [list_of_coords[i][1] for i in range(list_len)]
             minim, maxim = min(x_list), max(x_list)
             if maxim - minim != len(x_list) - 1:
-                return False, TypeError("You can only have one vehicle of a single colour")
+                messagebox.showerror("Error", f"You can only have one {colour_trialed} vehicle")
+                return False
 
         if y_valid:
             y_list = [list_of_coords[i][0] for i in range(list_len)]
             minim, maxim = min(y_list), max(y_list)
             if maxim - minim != len(y_list) - 1:
-                return False, TypeError("You can only have one vehicle of a single colour")
+                messagebox.showerror("Error", f"You can only have one {colour_trialed} vehicle")
+                return False
         # Passed checks
         if x_valid:
-            return True, Vehicle((x_coord, minim), 'ud', len(x_list))
+            return Vehicle((x_coord, minim), 'ud', len(x_list))
         else:
-            return True, Vehicle((minim, y_coord), 'lr', len(y_list))
+            return Vehicle((minim, y_coord), 'lr', len(y_list))
     else:
-        return False, TypeError("Vehicles must be on a line")
-
-
-
-
-# Input valid_dict into solver
+        messagebox.showerror("Error", f"{colour_trialed} vehicles must be on a line")
+        return False
 
