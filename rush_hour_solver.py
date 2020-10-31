@@ -1,5 +1,5 @@
 from collections import namedtuple
-
+from tkinter import messagebox
 Vehicle = namedtuple('Vehicle', 'coordinate orientation vehicle_length')
 
 def bfs(board):
@@ -15,10 +15,16 @@ def bfs(board):
 
         coordinate, _, _ = s['red']
         if coordinate == (5, 4):
-            board_history = []
-            for board in parent_node_history:
-                board_history.append(num_dict_to_grid_format(board))
-            return board_history
+            # If grid already solved
+            # Also will need to check if red is on (., 4)
+            if first_iteration:
+                messagebox.showerror("Error", "The board is already solved")
+                return [dict_to_grid_format(s)]
+            else:
+                board_history = []
+                for board in parent_node_history:
+                    board_history.append(dict_to_grid_format(board))
+                return board_history
 
         for neighbour in valid_board_changes(s):
             if neighbour not in visited:
@@ -78,7 +84,7 @@ def neighbour_coord_changes(vehicle, spaces_occupied):
         return None
 
 
-def num_dict_to_grid_format(num_dict):
+def dict_to_grid_format(num_dict):
     result_dict = {}
     for key, vehicle in num_dict.items():
         coordinate, orientiation, vehicle_length = vehicle

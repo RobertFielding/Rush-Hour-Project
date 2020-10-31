@@ -3,21 +3,11 @@ Vehicle = namedtuple('Vehicle', 'coordinate orientation vehicle_length')
 from tkinter import messagebox
 
 
-def convert_dict_to_int(dict):
-    result_dict = {}
-    for key, value_list in dict.items():
-        result_list = []
-        for value in value_list:
-            coords = (ord(value[0]) - 64, int(value[1]))
-            result_list.append(coords)
-        result_dict[key] = result_list
-    return result_dict
 
-
-def validate_dict(alphabet_dict):
-    num_dict = convert_dict_to_int(alphabet_dict)
+def validate_dict(coord_dict):
+    # Receive dictionary as {'red': (1, 1), (1, 2), ...}
     cond_dict = dict()
-    for key, value_list in num_dict.items():
+    for key, value_list in coord_dict.items():
         vehicle_valid = validate_list(value_list, key)
         if vehicle_valid:
             cond_dict[key] = vehicle_valid
@@ -36,6 +26,12 @@ def validate_list(list_of_coords, colour_trialed):
     test_index = 1
     x_coord = list_of_coords[0][0]
     y_coord = list_of_coords[0][1]
+
+    if colour_trialed == "red":
+        if y_coord != 4:
+            messagebox.showerror("Error", f"The {colour_trialed} vehicle must be horizontal to the exit cell.")
+            return False
+
     x_valid, y_valid = True, True
     while (x_valid or y_valid) and test_index < list_len:
         if x_valid:
@@ -48,24 +44,23 @@ def validate_list(list_of_coords, colour_trialed):
 
     # if vehicles along a line, are they connected
     if x_valid or y_valid:
+        # Cannot be both x and y valid, as the cars must be greater than 2 in length
         if x_valid:
-            x_list = [list_of_coords[i][1] for i in range(list_len)]
-            minim, maxim = min(x_list), max(x_list)
-            if maxim - minim != len(x_list) - 1:
-                messagebox.showerror("Error", f"You can only have one {colour_trialed} vehicle")
-                return False
+            index = 1
+        else:
+            index = 0
 
-        if y_valid:
-            y_list = [list_of_coords[i][0] for i in range(list_len)]
-            minim, maxim = min(y_list), max(y_list)
-            if maxim - minim != len(y_list) - 1:
-                messagebox.showerror("Error", f"You can only have one {colour_trialed} vehicle")
-                return False
+        list_of_coord = [list_of_coords[i][index] for i in range(list_len)]
+        minim, maxim = min(list_of_coord), max(list_of_coord)
+        if maxim - minim != len(list_of_coord) - 1:
+            messagebox.showerror("Error", f"You can only have one {colour_trialed} vehicle")
+            return False
+
         # Passed checks
         if x_valid:
-            return Vehicle((x_coord, minim), 'ud', len(x_list))
+            return Vehicle((x_coord, minim), 'ud', len(list_of_coord))
         else:
-            return Vehicle((minim, y_coord), 'lr', len(y_list))
+            return Vehicle((minim, y_coord), 'lr', len(list_of_coord))
     else:
         messagebox.showerror("Error", f"{colour_trialed} vehicles must be on a line")
         return False
