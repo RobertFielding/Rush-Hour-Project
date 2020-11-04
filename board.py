@@ -19,7 +19,7 @@ class Board:
             if vehicle:
                 occupied_cells.update(vehicle.co_ordinates())
         potential_boards = []
-        for vehicle in self.vehicles:
+        for i, vehicle in enumerate(self.vehicles):
             if vehicle:
                 for shift in [-1, 1]:
                     shifted_vehicle = vehicle.create_shifted(shift)
@@ -27,7 +27,6 @@ class Board:
                     on_grid = new_cell[0] in range(self.grid_size) and new_cell[1] in range(self.grid_size)
                     unoccupied = new_cell not in occupied_cells
                     if on_grid and unoccupied:
-                        i = self.colour_indices[vehicle.colour]
                         moved_vehicles = self.vehicles[:i] + (shifted_vehicle,) + self.vehicles[i+1:]
                         potential_boards.append(Board(self.grid_size, moved_vehicles, self.colour_indices))
         return potential_boards
