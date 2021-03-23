@@ -1,10 +1,10 @@
-To run the Rush-Hour solver:
+## Rush Hour Solver
 
-1) Download the files.
+Solves the puzzle game [RushHour](https://www.thinkfun.com/products/rush-hour/#:~:text=In%20Rush%20Hour%2C%20a%20sliding,progress%20at%20their%20own%20speed.) using the breadth-first search algorithm.
 
-2) Extract the zipped file or clone the repository.
+To use, run `input_grid.py`.
 
-3) Open input_grid.py in an interpreter and press run.
+The GUI was adapted from the code here: https://scipython.com/blog/a-simple-colouring-grid/.
   
 Enjoy!
 
